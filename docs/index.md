@@ -138,7 +138,8 @@ The registry manages adapters and provides the `Convert()` method that:
 
 tooladapter follows semantic versioning. The authoritative version matrix is maintained in `ai-tools-stack/go.mod` and propagated to `VERSIONS.md` in each repository.
 
-Current version: See [VERSIONS.md](../VERSIONS.md)
+Current version: See the stack version matrix in the published docs:
+`ai-tools-stack > Operations > Stack Changelog`.
 
 ## Next Steps
 
