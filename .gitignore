@@ -1,0 +1,39 @@
+# OS / editor noise
+.DS_Store
+.idea/
+.vscode/
+
+# Go build artifacts
+bin/
+build/
+dist/
+tmp/
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.test
+*.out
+coverage.out
+coverage.txt
+
+# Go workspaces
+go.work
+go.work.sum
+
+# Secrets / local env
+.env
+.env.*
+.envrc
+.direnv/
+*.pem
+*.key
+*.p12
+*.pfx
+secrets.*
+*.secret
+*.secrets
+
+# Logs
+*.log
