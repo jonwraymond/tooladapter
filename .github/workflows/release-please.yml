@@ -16,6 +16,7 @@ jobs:
     steps:
       - name: Create GitHub App token
         id: app_token
+        if: ${{ secrets.RELEASE_PLEASE_APP_ID != '' }}
         uses: actions/create-github-app-token@v1
         with:
           app-id: ${{ secrets.RELEASE_PLEASE_APP_ID }}
@@ -23,6 +24,6 @@ jobs:
       - name: Release Please
         uses: googleapis/release-please-action@v4
         with:
-          token: ${{ steps.app_token.outputs.token }}
+          token: ${{ secrets.RELEASE_PLEASE_APP_ID != '' && steps.app_token.outputs.token || github.token }}
           config-file: release-please-config.json
           manifest-file: .release-please-manifest.json
