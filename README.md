@@ -54,6 +54,39 @@ openaiFunc := result.Tool.(adapters.OpenAIFunction)
 | OpenAI | `OpenAIAdapter` | Strict mode enforces `additionalProperties=false` |
 | Anthropic | `AnthropicAdapter` | No `$ref` support |
 
+## Feature Support Matrix
+
+| Feature | MCP | OpenAI | Anthropic |
+|---------|:---:|:------:|:---------:|
+| `$ref` | Yes | No | No |
+| `$defs` | Yes | No | No |
+| `anyOf/oneOf/allOf` | Yes | No | Yes |
+| `not` | Yes | No | Yes |
+| `pattern` | Yes | Yes* | Yes |
+| `enum/const` | Yes | Yes | Yes |
+| `min/max` constraints | Yes | Yes | Yes |
+
+*OpenAI supports pattern in strict mode
+
+## Architecture
+
+```
+┌─────────────┐     ┌───────────────┐     ┌─────────────┐
+│  MCP Tool   │────▶│ CanonicalTool │────▶│ OpenAI Fn   │
+└─────────────┘     └───────────────┘     └─────────────┘
+       ▲                    │                    │
+       │                    ▼                    │
+       │            ┌───────────────┐            │
+       └────────────│   Registry    │◀───────────┘
+                    └───────────────┘
+```
+
+## Documentation
+
+- [Overview](docs/index.md) - Quick start guide
+- [Design Notes](docs/design-notes.md) - Schema decisions and limitations
+- [User Journey](docs/user-journey.md) - Complete conversion examples
+
 ## License
 
 See LICENSE file.
