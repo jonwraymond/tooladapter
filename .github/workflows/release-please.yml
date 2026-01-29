@@ -15,6 +15,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       RELEASE_PLEASE_APP_ID: ${{ secrets.RELEASE_PLEASE_APP_ID }}
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
       - name: Create GitHub App token
         id: app_token
