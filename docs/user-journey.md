@@ -63,25 +63,75 @@ openaiFunc := result.Tool.(adapters.OpenAIFunction)
 ### Conversion Flow Diagram
 
 ```mermaid
+%%{init: {'theme': 'base', 'themeVariables': {'actorBkg': '#2b6cb0', 'actorTextColor': '#fff', 'actorBorder': '#2c5282'}}}%%
 sequenceDiagram
-    participant Client
-    participant Registry as AdapterRegistry
-    participant MCP as MCPAdapter
-    participant Canon as CanonicalTool
-    participant OpenAI as OpenAIAdapter
-    participant Result as OpenAIFunction
+    autonumber
 
-    Client->>Registry: Convert(mcpTool, "mcp", "openai")
-    Registry->>MCP: ToCanonical(mcp.Tool)
-    MCP->>MCP: mapToJSONSchema(InputSchema)
-    MCP->>Canon: Create CanonicalTool
-    Note over Canon: Name: "get_weather"<br/>Description: "Get current weather..."<br/>SourceMeta["title"] = "Get Weather"
-    Registry->>OpenAI: SupportsFeature(each feature)
-    Note over Registry: Check for feature loss
-    Registry->>OpenAI: FromCanonical(canonical)
-    OpenAI->>OpenAI: InputSchema.ToMap()
-    OpenAI->>Result: Create OpenAIFunction
-    Result-->>Client: ConversionResult{Tool, Warnings}
+    participant Client as 🖥️ Client
+    participant Registry as 📋 AdapterRegistry
+    participant MCP as 📡 MCPAdapter
+    participant Canon as 🎯 CanonicalTool
+    participant OpenAI as 🤖 OpenAIAdapter
+    participant Result as 📦 OpenAIFunction
+
+    rect rgb(43, 108, 176, 0.1)
+        Note over Client,Canon: Phase 1: Convert to Canonical
+        Client->>+Registry: Convert(mcpTool, "mcp", "openai")
+        Registry->>+MCP: ToCanonical(mcp.Tool)
+        MCP->>MCP: mapToJSONSchema(InputSchema)
+        MCP->>Canon: Create CanonicalTool
+        Note over Canon: Name: "get_weather"<br/>Description: "Get current weather..."<br/>SourceMeta["title"] = "Get Weather"
+    end
+
+    rect rgb(214, 158, 46, 0.1)
+        Note over Registry,OpenAI: Phase 2: Check Feature Loss
+        Registry->>OpenAI: SupportsFeature(each feature)
+        Note over Registry: Collect warnings for<br/>unsupported features
+    end
+
+    rect rgb(56, 161, 105, 0.1)
+        Note over OpenAI,Result: Phase 3: Convert to Target
+        Registry->>+OpenAI: FromCanonical(canonical)
+        OpenAI->>OpenAI: InputSchema.ToMap()
+        OpenAI->>Result: Create OpenAIFunction
+        Result-->>-OpenAI: OpenAIFunction
+        OpenAI-->>-Registry: tool
+        Registry-->>-Client: ConversionResult{Tool, Warnings}
+    end
+```
+
+### Format Conversion Architecture
+
+```mermaid
+%%{init: {'theme': 'base', 'themeVariables': {'primaryColor': '#d69e2e'}}}%%
+flowchart LR
+    subgraph sources["Source Formats"]
+        MCP_IN["📡 MCP Tool"]
+        OPENAI_IN["🤖 OpenAI Function"]
+        ANTHROPIC_IN["🔷 Anthropic Tool"]
+    end
+
+    subgraph canonical["Canonical Form"]
+        Canon["🎯 CanonicalTool<br/><small>• Name, Description<br/>• InputSchema (JSONSchema)<br/>• SourceFormat, SourceMeta</small>"]
+    end
+
+    subgraph targets["Target Formats"]
+        MCP_OUT["📡 MCP Tool"]
+        OPENAI_OUT["🤖 OpenAI Function"]
+        ANTHROPIC_OUT["🔷 Anthropic Tool"]
+    end
+
+    MCP_IN --> Canon
+    OPENAI_IN --> Canon
+    ANTHROPIC_IN --> Canon
+
+    Canon --> MCP_OUT
+    Canon --> OPENAI_OUT
+    Canon --> ANTHROPIC_OUT
+
+    style canonical fill:#d69e2e,stroke:#b7791f,stroke-width:3px
+    style sources fill:#3182ce,stroke:#2c5282
+    style targets fill:#38a169,stroke:#276749
 ```
 
 ### Step 4: Check for Feature Loss Warnings
