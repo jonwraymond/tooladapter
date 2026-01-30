@@ -47,6 +47,10 @@ tooladapter does **not** change the MCP surface. It provides a normalization lay
 - **Thread-safe registry**: `AdapterRegistry` safely manages adapters across goroutines
 - **Round-trip preservation**: Format-specific metadata stored in `SourceMeta` enables better round-trip conversions
 
+### Interface Contracts
+
+- **Adapter**: thread-safe; pure conversion without mutation; `ToCanonical`/`FromCanonical` return errors for invalid schema; deterministic output for identical inputs.
+
 ## Installation
 
 ```bash
