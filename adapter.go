@@ -94,6 +94,12 @@ func AllFeatures() []SchemaFeature {
 // Adapter defines the contract for protocol-specific tool adapters.
 // Each adapter handles bidirectional conversion between a specific
 // tool format (MCP, OpenAI, Anthropic) and the canonical representation.
+//
+// Contract:
+//   - Thread-safety: implementations must be safe for concurrent use unless documented otherwise.
+//   - Ownership: must not mutate caller-owned inputs; return new objects on conversion.
+//   - Errors: ToCanonical/FromCanonical must return typed errors (e.g., *ConversionError) for invalid input.
+//   - Determinism: same input yields structurally equivalent canonical output.
 type Adapter interface {
 	// Name returns the adapter's identifier (e.g., "mcp", "openai", "anthropic")
 	Name() string
