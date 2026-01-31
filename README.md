@@ -1,91 +1,38 @@
 # tooladapter
 
-Protocol-agnostic tool format conversion library for Go.
+> **DEPRECATED**: This repository has been merged into [toolfoundation](https://github.com/jonwraymond/toolfoundation). Please use `github.com/jonwraymond/toolfoundation/adapter` instead.
 
-## Overview
+## Migration
 
-tooladapter enables bidirectional transformation between MCP, OpenAI, and Anthropic tool definitions through a canonical intermediate representation (`CanonicalTool`).
+See [MIGRATION.md](MIGRATION.md) for detailed migration instructions.
 
-Key features:
-- Pure data transforms (no I/O, network, or runtime execution)
-- Feature loss tracking with warnings
-- Thread-safe adapter registry
-- Deterministic conversions
+### Quick Migration
 
-## Installation
-
-```bash
-go get github.com/jonwraymond/tooladapter
-```
-
-## Quick Start
+Replace your imports:
 
 ```go
-import (
-    "github.com/jonwraymond/tooladapter"
-    "github.com/jonwraymond/tooladapter/adapters"
-)
+// Before
+import "github.com/jonwraymond/tooladapter"
+import "github.com/jonwraymond/tooladapter/adapters"
 
-// Create registry and register adapters
-registry := tooladapter.NewRegistry()
-registry.Register(adapters.NewMCPAdapter())
-registry.Register(adapters.NewOpenAIAdapter())
-registry.Register(adapters.NewAnthropicAdapter())
-
-// Convert MCP tool to OpenAI format
-result, err := registry.Convert(mcpTool, "mcp", "openai")
-if err != nil {
-    log.Fatal(err)
-}
-
-// Check for feature loss warnings
-for _, w := range result.Warnings {
-    log.Printf("Warning: %s", w)
-}
-
-openaiFunc := result.Tool.(adapters.OpenAIFunction)
+// After
+import "github.com/jonwraymond/toolfoundation/adapter"
+import "github.com/jonwraymond/toolfoundation/adapter/adapters"
 ```
 
-## Supported Formats
+## Why This Change?
 
-| Format | Adapter | Notes |
-|--------|---------|-------|
-| MCP | `MCPAdapter` | Full feature support |
-| OpenAI | `OpenAIAdapter` | Strict mode enforces `additionalProperties=false` |
-| Anthropic | `AnthropicAdapter` | No `$ref` support |
+The tooladapter functionality has been consolidated into toolfoundation as part of the ApertureStack unification effort. This provides:
 
-## Feature Support Matrix
+- Single import path for foundational tool types
+- Better cohesion between canonical types and adapters
+- Simplified dependency management
 
-| Feature | MCP | OpenAI | Anthropic |
-|---------|:---:|:------:|:---------:|
-| `$ref` | Yes | No | No |
-| `$defs` | Yes | No | No |
-| `anyOf/oneOf/allOf` | Yes | No | Yes |
-| `not` | Yes | No | Yes |
-| `pattern` | Yes | Yes* | Yes |
-| `enum/const` | Yes | Yes | Yes |
-| `min/max` constraints | Yes | Yes | Yes |
+## Timeline
 
-*OpenAI supports pattern in strict mode
-
-## Architecture
-
-```
-┌─────────────┐     ┌───────────────┐     ┌─────────────┐
-│  MCP Tool   │────▶│ CanonicalTool │────▶│ OpenAI Fn   │
-└─────────────┘     └───────────────┘     └─────────────┘
-       ▲                    │                    │
-       │                    ▼                    │
-       │            ┌───────────────┐            │
-       └────────────│   Registry    │◀───────────┘
-                    └───────────────┘
-```
-
-## Documentation
-
-- [Overview](docs/index.md) - Quick start guide
-- [Design Notes](docs/design-notes.md) - Schema decisions and limitations
-- [User Journey](docs/user-journey.md) - Complete conversion examples
+- This repository will remain available for existing users
+- No new features will be added
+- Critical bug fixes only until v1.0 of toolfoundation
 
 ## License
 
